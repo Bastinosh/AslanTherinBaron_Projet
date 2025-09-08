@@ -1,0 +1,3 @@
+I. Introduction
+A. Présentation du projet
+Notre projet est un Pong en web, développé avec (html/css/js) Le but est de créer un jeu jouable directement dans un navigateur, où deux joueurs peuvent s’affronter. Le jeu comprend un système de score qui s’incrémente à chaque fois qu’un joueur marque un point, avec un affichage en temps réel sur l’écran. La balle rebondit sur les raquettes, et le jeu sera enrichi avec des bonus (comme accélérer la balle ou agrandir la raquette) pour rendre l’expérience plus dynamique. 
