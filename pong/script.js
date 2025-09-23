@@ -1,0 +1,92 @@
+
+//canvas represente la zone de jeu avec l'id gameCanvas
+const canvas = document.getElementById("gameCanvas");
+//ctx va obtenir les methode et rendu 2d 
+const ctx = canvas.getContext("2d");
+
+// Raquette gauche
+const leftPaddle = {
+  x: 20, //pos horizontal
+  y: canvas.height / 2 - 40, //pos vertical centrer par rapport au centre du canvas
+  width: 15, 
+  height: 80,
+  speed: 5,
+  dy: 0 //vitesse vertical
+};
+
+// Raquette droite
+const rightPaddle = {
+  x: canvas.width - 35,
+  y: canvas.height / 2 - 40,
+  width: 15,
+  height: 80,
+  speed: 5,
+  dy: 0
+};
+
+// objet vide pour inserer les touche appuiyer
+const keys = {};
+
+//ajoute un evennement a keys quand une touche est appuiyer
+document.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+});
+
+document.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
+
+
+//fonction qui gere les deplacement 
+function movePaddles() {
+  // Joueur gauche : Z et S
+  if (keys["z"]) {
+    leftPaddle.dy = -leftPaddle.speed;
+  } else if (keys["s"]) {
+    leftPaddle.dy = leftPaddle.speed;
+  } else {
+    leftPaddle.dy = 0;
+  }
+
+  // Joueur droit : flèches ↑ et ↓
+  if (keys["ArrowUp"]) {
+    rightPaddle.dy = -rightPaddle.speed;
+  } else if (keys["ArrowDown"]) {
+    rightPaddle.dy = rightPaddle.speed;
+  } else {
+    rightPaddle.dy = 0;
+  }
+
+  // Mise à jour positions
+  leftPaddle.y += leftPaddle.dy;
+  rightPaddle.y += rightPaddle.dy;
+
+  // Limites du canvas
+  if (leftPaddle.y < 0) leftPaddle.y = 0;
+  if (leftPaddle.y + leftPaddle.height > canvas.height) {
+    leftPaddle.y = canvas.height - leftPaddle.height;
+  }
+
+  if (rightPaddle.y < 0) rightPaddle.y = 0;
+  if (rightPaddle.y + rightPaddle.height > canvas.height) {
+    rightPaddle.y = canvas.height - rightPaddle.height;
+  }
+}
+
+function drawPaddle(paddle) {
+  ctx.fillStyle = "white";
+  ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+}
+
+function update() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  movePaddles();
+
+  drawPaddle(leftPaddle);
+  drawPaddle(rightPaddle);
+
+  requestAnimationFrame(update);
+}
+
+update();
