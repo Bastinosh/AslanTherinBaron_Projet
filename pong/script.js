@@ -39,10 +39,10 @@ document.addEventListener("keyup", (e) => {
 
 //fonction qui gere les deplacement 
 function movePaddles() {
-  // Joueur gauche : Z et S
+  //si la touche z est appuiyer la raquette la vitesse de la raquette est defini a -vitesse (mouvement vert le bas) 
   if (keys["z"]) {
     leftPaddle.dy = -leftPaddle.speed;
-  } else if (keys["s"]) {
+  } else if (keys["s"]) {  //meme principe mais mouvement vers le haut
     leftPaddle.dy = leftPaddle.speed;
   } else {
     leftPaddle.dy = 0;
@@ -57,11 +57,11 @@ function movePaddles() {
     rightPaddle.dy = 0;
   }
 
-  // Mise à jour positions
+  // met a jour les position des raquettes
   leftPaddle.y += leftPaddle.dy;
   rightPaddle.y += rightPaddle.dy;
 
-  // Limites du canvas
+  // fait en sorte que les raquette ne vont pas plus loin que la zone du canvas
   if (leftPaddle.y < 0) leftPaddle.y = 0;
   if (leftPaddle.y + leftPaddle.height > canvas.height) {
     leftPaddle.y = canvas.height - leftPaddle.height;
@@ -73,12 +73,14 @@ function movePaddles() {
   }
 }
 
+// avec ctx defini au dessus desine un rectangle pour les raquette
 function drawPaddle(paddle) {
   ctx.fillStyle = "white";
   ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
-function update() {
+// la boucle de jeu 
+function update() { //efface le contenu des canvas a chaque frame
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   movePaddles();
