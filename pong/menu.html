@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<menu>
+    <h1>Bienvenue sur Pong !!!</h1>
+    <slider>
+        <label class="switch">
+            <input type="checkbox" id="checkbox">
+            <span id="slider_mode" onclick="modeChange()"></span>
+        </label>
+        <span id="mode"></span>
+    </slider>
+    <button class="btn_play" onclick="window.location.href='game.html';">
+        Lancer le jeu
+    </button>
+</menu>
+</body>
+
+<script>
+    let display = document.getElementById('mode');
+    let chkbx = document.getElementById('checkbox');
+    let mode = 'J2';
+
+    window.onload = modeChange
+    window.onclick = modeChange
+    function modeChange()
+    {
+        display.textContent = chkbx.checked ? 'Joueur 2':'BOT';
+        localStorage.setItem('mode', mode = chkbx.checked ? 'J2':'BOT');
+    }
+
+</script>
+
+</html>
