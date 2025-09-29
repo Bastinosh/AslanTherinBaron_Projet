@@ -59,6 +59,12 @@ function modeRetrieve()
     document.getElementById("mode").textContent = gameMode;
 }
 
+function gradientScore()
+{
+    //TODO: finir activer desactiver
+    document.getElementById("blink").enabled;
+}
+
 function drawScore() {
   ctx.fillStyle = "white";
   ctx.font = "30px Arial";
