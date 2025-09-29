@@ -38,7 +38,8 @@ const ball ={
   solY: canvas.height, // Position Y du sol
   width: 10,
   height: 10,
-
+  resetTimeWhenScored: 1200, //in millis
+  exists: true
 }
 
 // objet vide pour inserer les touche appuiyer
@@ -123,12 +124,24 @@ function update() { //efface le contenu des canvas a chaque frame
   drawPaddle(rightPaddle);
   drawScore();
 
-  animateBall()
+  if(ball.exists) animateBall()
 
   requestAnimationFrame(update);
 }
 
 update();
+
+
+
+function incrementScore(incrementLeft){
+  if (incrementLeft)score.left++;
+  else score.right++;
+
+  ball.exists = false
+  setTimeout(function(){
+    ball.exists = true
+  }, ball.resetTimeWhenScored);
+}
 
 function animateBall() {
   ball.positionY += ball.vitesseY;
@@ -136,14 +149,14 @@ function animateBall() {
 
   // Si la balle sort à droite = point pour le joueur gauche
   if (ball.positionX + ball.width / 2 >= canvas.width - 1) {
-    score.left++;
+    incrementScore(true)
     ball.positionX = canvas.width / 2;
     ball.positionY = canvas.height / 2;
   }
 
   // Si la balle sort à gauche = point pour le joueur droit
   if (ball.positionX + ball.width / 2 < 0) {
-    score.right++;
+    incrementScore(false)
     ball.positionX = canvas.width / 2;
     ball.positionY = canvas.height / 2;
   }
