@@ -4,6 +4,10 @@ const canvas = document.getElementById("gameCanvas");
 //ctx va obtenir les methode et rendu 2d 
 const ctx = canvas.getContext("2d");
 
+let gameMode = null;
+
+window.onload = function () {modeRetrieve()};
+
 // Raquette gauche
 const leftPaddle = {
   x: 20, //pos horizontal
@@ -48,6 +52,11 @@ document.addEventListener("keyup", (e) => {
   keys[e.key] = false;
 });
 
+function modeRetrieve()
+{
+    gameMode = localStorage.getItem('mode') === null ? "RETRIEVE FAILED" : localStorage.getItem('mode');
+    document.getElementById("mode").textContent = gameMode;
+}
 
 //fonction qui gere les deplacement 
 function movePaddles() {

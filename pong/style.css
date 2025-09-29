@@ -1,9 +1,9 @@
 body {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    justify-content: space-between;
+    padding: 5%;
     color: #f1e3e3;
     background-color: #131313;
     font-family: Arial, sans-serif;
@@ -23,6 +23,17 @@ slider
     align-items: center;
     justify-content: space-between;
     font-size: larger;
+}
+
+.gameMode
+{
+    font-size: xxx-large;
+    background-color: #222;
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    padding: 1rem 3rem;
+    margin-bottom: 1rem;
 }
 
 .btn_play{
