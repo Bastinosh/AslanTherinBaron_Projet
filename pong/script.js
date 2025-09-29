@@ -34,6 +34,18 @@ const rightPaddle = {
   dy: 0
 };
 
+const ball ={
+  positionX: canvas.width/2,
+  positionY: canvas.height/2,
+  vitesseX: 8,
+  vitesseY: 3,
+  solX: canvas.width,
+  solY: canvas.height, // Position Y du sol
+  width: 10,
+  height: 10,
+
+}
+
 // objet vide pour inserer les touche appuiyer
 const keys = {};
 
@@ -89,6 +101,11 @@ function drawPaddle(paddle) {
   ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
+function drawBall() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(ball.positionX, ball.positionY, ball.width, ball.height);
+}
+
 // la boucle de jeu 
 function update() { //efface le contenu des canvas a chaque frame
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -99,7 +116,55 @@ function update() { //efface le contenu des canvas a chaque frame
   drawPaddle(rightPaddle);
   drawScore();
 
+  animateBall()
+
   requestAnimationFrame(update);
 }
 
 update();
+
+function animateBall() {
+  ball.positionY += ball.vitesseY;
+  ball.positionX += ball.vitesseX;
+
+  if (ball.positionX + ball.width/2 >= canvas.width-1 || ball.positionX + ball.width/2 < 0) {
+    ball.positionX = canvas.width/2;
+    ball.positionY = canvas.height/2;
+  }
+
+  if (ball.positionY + ball.height/2 >= canvas.height-1) {
+    ball.positionY = canvas.height-ball.height; // Empêche l'objet de passer à travers
+    ball.vitesseY = -ball.vitesseY; // Inverse la direction et réduit la vitesse (perte d'énergie)
+  }
+
+  if(ball.positionY + ball.height/2 < 0){
+    ball.positionY = ball.height;
+    ball.vitesseY = -ball.vitesseY;
+  }
+
+  if(leftPaddle.x + leftPaddle.width/2 > ball.positionX - ball.width/2){
+    if(leftPaddle.y + leftPaddle.height <= ball.positionY - ball.height/2
+        || leftPaddle.y > ball.positionY + ball.height/2)
+    {
+      //perdu
+    }
+    else
+    {
+      ball.vitesseX = -ball.vitesseX;
+    }
+  }
+
+  if(rightPaddle.x - rightPaddle.width/2 < ball.positionX + ball.width/2){
+    if(rightPaddle.y + rightPaddle.height <= ball.positionY - ball.height/2
+        || rightPaddle.y > ball.positionY + ball.height/2)
+    {
+      //perdu
+    }
+    else
+    {
+      ball.vitesseX = -ball.vitesseX;
+    }
+  }
+
+  drawBall()
+}
