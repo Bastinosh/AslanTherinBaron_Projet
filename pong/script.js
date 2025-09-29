@@ -1,18 +1,13 @@
+//init le score
+let score = { left: 0 , right: 0 };
+
+let gameMode = null;
+window.onload = function () {modeRetrieve()};
 
 //canvas represente la zone de jeu avec l'id gameCanvas
 const canvas = document.getElementById("gameCanvas");
 //ctx va obtenir les methode et rendu 2d 
 const ctx = canvas.getContext("2d");
-
-//init le score
-let score = { left: 0 , right: 0 };
-
-function drawScore() {
-  ctx.fillStyle = "white";
-  ctx.font = "30px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40); //affiche le score
-}
 
 // Raquette gauche
 const leftPaddle = {
@@ -58,6 +53,18 @@ document.addEventListener("keyup", (e) => {
   keys[e.key] = false;
 });
 
+function modeRetrieve()
+{
+    gameMode = localStorage.getItem('mode') === null ? "RETRIEVE FAILED" : localStorage.getItem('mode');
+    document.getElementById("mode").textContent = gameMode;
+}
+
+function drawScore() {
+  ctx.fillStyle = "white";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40); //affiche le score
+}
 
 //fonction qui gere les deplacement 
 function movePaddles() {
