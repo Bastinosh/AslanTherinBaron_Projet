@@ -5,17 +5,14 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 //init le score
-let score = { left: 0, right: 0 };
-
+let score = { left: 0 , right: 0 };
 
 function drawScore() {
   ctx.fillStyle = "white";
   ctx.font = "30px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40);
+  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40); //affiche le score
 }
-
-
 
 // Raquette gauche
 const leftPaddle = {
