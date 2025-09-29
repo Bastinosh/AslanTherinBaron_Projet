@@ -27,7 +27,7 @@ const rightPaddle = {
 const ball ={
   positionX: canvas.width/2,
   positionY: canvas.height/2,
-  vitesseX: 10,
+  vitesseX: 8,
   vitesseY: 3,
   solX: canvas.width,
   solY: canvas.height, // Position Y du sol
@@ -116,19 +116,43 @@ function animateBall() {
   ball.positionY += ball.vitesseY;
   ball.positionX += ball.vitesseX;
 
-  if (ball.positionX + ball.width >= canvas.width-1 || ball.positionX + ball.width < 0) {
+  if (ball.positionX + ball.width/2 >= canvas.width-1 || ball.positionX + ball.width/2 < 0) {
     ball.positionX = canvas.width/2;
     ball.positionY = canvas.height/2;
   }
 
-  if (ball.positionY + ball.height >= canvas.height-1) {
+  if (ball.positionY + ball.height/2 >= canvas.height-1) {
     ball.positionY = canvas.height-ball.height; // Empêche l'objet de passer à travers
     ball.vitesseY = -ball.vitesseY; // Inverse la direction et réduit la vitesse (perte d'énergie)
   }
 
-  if(ball.positionY + ball.height < 0){
+  if(ball.positionY + ball.height/2 < 0){
     ball.positionY = ball.height;
     ball.vitesseY = -ball.vitesseY;
+  }
+
+  if(leftPaddle.x + leftPaddle.width/2 > ball.positionX - ball.width/2){
+    if(leftPaddle.y + leftPaddle.height <= ball.positionY - ball.height/2
+        || leftPaddle.y > ball.positionY + ball.height/2)
+    {
+      //perdu
+    }
+    else
+    {
+      ball.vitesseX = -ball.vitesseX;
+    }
+  }
+
+  if(rightPaddle.x - rightPaddle.width/2 < ball.positionX + ball.width/2){
+    if(rightPaddle.y + rightPaddle.height <= ball.positionY - ball.height/2
+        || rightPaddle.y > ball.positionY + ball.height/2)
+    {
+      //perdu
+    }
+    else
+    {
+      ball.vitesseX = -ball.vitesseX;
+    }
   }
 
   drawBall()
