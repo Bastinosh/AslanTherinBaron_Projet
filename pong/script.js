@@ -1,12 +1,13 @@
+//init le score
+let score = { left: 0 , right: 0 };
+
+let gameMode = null;
+window.onload = function () {modeRetrieve()};
 
 //canvas represente la zone de jeu avec l'id gameCanvas
 const canvas = document.getElementById("gameCanvas");
 //ctx va obtenir les methode et rendu 2d 
 const ctx = canvas.getContext("2d");
-
-let gameMode = null;
-
-window.onload = function () {modeRetrieve()};
 
 // Raquette gauche
 const leftPaddle = {
@@ -56,6 +57,13 @@ function modeRetrieve()
 {
     gameMode = localStorage.getItem('mode') === null ? "RETRIEVE FAILED" : localStorage.getItem('mode');
     document.getElementById("mode").textContent = gameMode;
+}
+
+function drawScore() {
+  ctx.fillStyle = "white";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40); //affiche le score
 }
 
 //fonction qui gere les deplacement 
@@ -113,6 +121,7 @@ function update() { //efface le contenu des canvas a chaque frame
 
   drawPaddle(leftPaddle);
   drawPaddle(rightPaddle);
+  drawScore();
 
   animateBall()
 
@@ -125,44 +134,56 @@ function animateBall() {
   ball.positionY += ball.vitesseY;
   ball.positionX += ball.vitesseX;
 
-  if (ball.positionX + ball.width/2 >= canvas.width-1 || ball.positionX + ball.width/2 < 0) {
-    ball.positionX = canvas.width/2;
-    ball.positionY = canvas.height/2;
+  // Si la balle sort à droite = point pour le joueur gauche
+  if (ball.positionX + ball.width / 2 >= canvas.width - 1) {
+    score.left++;
+    ball.positionX = canvas.width / 2;
+    ball.positionY = canvas.height / 2;
   }
 
-  if (ball.positionY + ball.height/2 >= canvas.height-1) {
-    ball.positionY = canvas.height-ball.height; // Empêche l'objet de passer à travers
-    ball.vitesseY = -ball.vitesseY; // Inverse la direction et réduit la vitesse (perte d'énergie)
+  // Si la balle sort à gauche = point pour le joueur droit
+  if (ball.positionX + ball.width / 2 < 0) {
+    score.right++;
+    ball.positionX = canvas.width / 2;
+    ball.positionY = canvas.height / 2;
   }
 
-  if(ball.positionY + ball.height/2 < 0){
+  // Rebond en bas
+  if (ball.positionY + ball.height / 2 >= canvas.height - 1) {
+    ball.positionY = canvas.height - ball.height;
+    ball.vitesseY = -ball.vitesseY;
+  }
+
+  // Rebond en haut
+  if (ball.positionY + ball.height / 2 < 0) {
     ball.positionY = ball.height;
     ball.vitesseY = -ball.vitesseY;
   }
 
-  if(leftPaddle.x + leftPaddle.width/2 > ball.positionX - ball.width/2){
-    if(leftPaddle.y + leftPaddle.height <= ball.positionY - ball.height/2
-        || leftPaddle.y > ball.positionY + ball.height/2)
-    {
-      //perdu
-    }
-    else
-    {
+  // Collision raquette gauche
+  if (leftPaddle.x + leftPaddle.width / 2 > ball.positionX - ball.width / 2) {
+    if (
+      leftPaddle.y + leftPaddle.height <= ball.positionY - ball.height / 2 ||
+      leftPaddle.y > ball.positionY + ball.height / 2
+    ) {
+      // perdu
+    } else {
       ball.vitesseX = -ball.vitesseX;
     }
   }
 
-  if(rightPaddle.x - rightPaddle.width/2 < ball.positionX + ball.width/2){
-    if(rightPaddle.y + rightPaddle.height <= ball.positionY - ball.height/2
-        || rightPaddle.y > ball.positionY + ball.height/2)
-    {
-      //perdu
-    }
-    else
-    {
+  // Collision raquette droite
+  if (rightPaddle.x - rightPaddle.width / 2 < ball.positionX + ball.width / 2) {
+    if (
+      rightPaddle.y + rightPaddle.height <= ball.positionY - ball.height / 2 ||
+      rightPaddle.y > ball.positionY + ball.height / 2
+    ) {
+      // perdu
+    } else {
       ball.vitesseX = -ball.vitesseX;
     }
   }
 
-  drawBall()
+  drawBall();
 }
+
