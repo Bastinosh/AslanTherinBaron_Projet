@@ -3,7 +3,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 5%;
+    padding-top: 5%;
     color: #f1e3e3;
     background-color: #131313;
     font-family: Arial, sans-serif;
@@ -50,6 +50,18 @@ slider
 .btn_play:hover {
     background-color: #45a049;
     transform: scale(1.05);
+}
+
+@keyframes blink {
+
+    to {
+        background: #b0e9fa;
+    }
+}
+
+.blink
+{
+    animation: blink 0.5s 10 alternate ease-out;
 }
 
 canvas {
