@@ -61,8 +61,10 @@ function modeRetrieve()
 
 function gradientScore()
 {
-    //TODO: finir activer desactiver
-    document.getElementById("blink").enabled;
+    document.body.classList.add('blink')
+    window.setTimeout(function() {
+        document.body.classList.remove('blink')
+    }, 100)
 }
 
 function drawScore() {
@@ -145,6 +147,7 @@ function animateBall() {
     score.left++;
     ball.positionX = canvas.width / 2;
     ball.positionY = canvas.height / 2;
+      gradientScore()
   }
 
   // Si la balle sort à gauche = point pour le joueur droit
@@ -152,6 +155,7 @@ function animateBall() {
     score.right++;
     ball.positionX = canvas.width / 2;
     ball.positionY = canvas.height / 2;
+      gradientScore()
   }
 
   // Rebond en bas

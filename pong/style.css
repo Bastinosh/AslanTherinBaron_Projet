@@ -54,19 +54,14 @@ slider
 
 @keyframes blink {
 
-    0%,
-    100% {
-        background: #680000;
-    }
-
-    20%,25%,50%,75% {
-        background-color: #222;
+    to {
+        background: #b0e9fa;
     }
 }
 
-.blink:disabled
+.blink
 {
-    animation: blink 0.8s ease-in-out infinite;
+    animation: blink 0.5s 10 alternate ease-out;
 }
 
 canvas {
