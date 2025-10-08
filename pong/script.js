@@ -1,125 +1,73 @@
-//init le score
-let score = { left: 0 , right: 0 };
-
+// === INITIALISATION ===
+let score = { left: 0, right: 0 };
 let gameMode = null;
-window.onload = function () {modeRetrieve()};
+window.onload = function () { modeRetrieve(); };
 
-//canvas represente la zone de jeu avec l'id gameCanvas
 const canvas = document.getElementById("gameCanvas");
-//ctx va obtenir les methode et rendu 2d 
 const ctx = canvas.getContext("2d");
 
-// Raquette gauche
 const leftPaddle = {
-  x: 20, //pos horizontal
-  y: canvas.height / 2 - 40, //pos vertical centrer par rapport au centre du canvas
-  width: 15, 
+  x: 20,
+  y: canvas.height / 2 - 40,
+  width: 15,
   height: 80,
-  speed: 5,
-  dy: 0 //vitesse vertical
+  speed: 350, // pixels/sec
+  dy: 0
 };
 
-// Raquette droite
 const rightPaddle = {
   x: canvas.width - 35,
   y: canvas.height / 2 - 40,
   width: 15,
   height: 80,
-  speed: 5,
+  speed: 350,
   dy: 0
 };
 
-const ball ={
-  positionX: canvas.width/2,
-  positionY: canvas.height/2,
-  vitesseX: 8,
-  vitesseY: 3,
-  solX: canvas.width,
-  solY: canvas.height, // Position Y du sol
+const ball = {
+  positionX: canvas.width / 2,
+  positionY: canvas.height / 2,
+  vitesseX: 500, // pixels/sec
+  vitesseY: 200,
   width: 10,
   height: 10,
-  resetTimeWhenScored: 1200, //in millis
+  resetTimeWhenScored: 1200, // ms
   exists: true
-}
+};
 
-// objet vide pour inserer les touche appuiyer
 const keys = {};
+document.addEventListener("keydown", (e) => { keys[e.key] = true; });
+document.addEventListener("keyup", (e) => { keys[e.key] = false; });
 
-//ajoute un evennement a keys quand une touche est appuiyer
-document.addEventListener("keydown", (e) => {
-  keys[e.key] = true;
-});
-
-document.addEventListener("keyup", (e) => {
-  keys[e.key] = false;
-});
-
-function modeRetrieve()
-{
-    gameMode = localStorage.getItem('mode') === null ? "RETRIEVE FAILED" : localStorage.getItem('mode');
-    document.getElementById("mode").textContent = gameMode;
+// === FONCTIONS UTILITAIRES ===
+function modeRetrieve() {
+  gameMode = localStorage.getItem('mode') === null ? "RETRIEVE FAILED" : localStorage.getItem('mode');
+  document.getElementById("mode").textContent = gameMode;
 }
 
-function gradientScore()
-{
-    document.body.classList.add('blink')
-    window.setTimeout(function() {
-        document.body.classList.remove('blink')
-    }, 100)
+function gradientScore() {
+  document.body.classList.add('blink');
+  setTimeout(() => { document.body.classList.remove('blink'); }, 100);
 }
 
+// === AFFICHAGE ===
 function drawScore() {
   ctx.fillStyle = "white";
   ctx.font = "30px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40); //affiche le score
+  ctx.fillText(`${score.left} - ${score.right}`, canvas.width / 2, 40);
 }
 
-//fonction qui gere les deplacement 
-function movePaddles() {
-  // Joueur gauche : touches Z et S
-  if (keys["z"]) {
-    leftPaddle.dy = -leftPaddle.speed;
-  } else if (keys["s"]) {
-    leftPaddle.dy = leftPaddle.speed;
-  } else {
-    leftPaddle.dy = 0;
+function drawCenterLine() {
+  ctx.strokeStyle = "white";
+  ctx.beginPath();
+  for (let y = 0; y < canvas.height; y += 20) {
+    ctx.moveTo(canvas.width / 2, y);
+    ctx.lineTo(canvas.width / 2, y + 10);
   }
-
-  // Joueur droit
-  if (gameMode === 'BOT') {
-    // Bot qui suit la balle
-    if (ball.positionY + ball.height/2 < rightPaddle.y + rightPaddle.height/2) {
-      rightPaddle.dy = -rightPaddle.speed;
-    } else if (ball.positionY + ball.height/2 > rightPaddle.y + rightPaddle.height/2) {
-      rightPaddle.dy = rightPaddle.speed;
-    } else {
-      rightPaddle.dy = 0;
-    }
-  } else {
-    // Joueur humain : flèches ↑ et ↓
-    if (keys["ArrowUp"]) {
-      rightPaddle.dy = -rightPaddle.speed;
-    } else if (keys["ArrowDown"]) {
-      rightPaddle.dy = rightPaddle.speed;
-    } else {
-      rightPaddle.dy = 0;
-    }
-  }
-
-  // Mise à jour des positions
-  leftPaddle.y += leftPaddle.dy;
-  rightPaddle.y += rightPaddle.dy;
-
-  // Limite des raquettes à l'intérieur du canvas
-  if (leftPaddle.y < 0) leftPaddle.y = 0;
-  if (leftPaddle.y + leftPaddle.height > canvas.height) leftPaddle.y = canvas.height - leftPaddle.height;
-  if (rightPaddle.y < 0) rightPaddle.y = 0;
-  if (rightPaddle.y + rightPaddle.height > canvas.height) rightPaddle.y = canvas.height - rightPaddle.height;
+  ctx.stroke();
 }
 
-
-// avec ctx defini au dessus desine un rectangle pour les raquette
 function drawPaddle(paddle) {
   ctx.fillStyle = "white";
   ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
@@ -130,93 +78,128 @@ function drawBall() {
   ctx.fillRect(ball.positionX, ball.positionY, ball.width, ball.height);
 }
 
-// la boucle de jeu 
-function update() { //efface le contenu des canvas a chaque frame
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// === DEPLACEMENTS ===
+function movePaddles(dt) {
+  // Joueur gauche
+  if (keys["z"]) leftPaddle.dy = -leftPaddle.speed;
+  else if (keys["s"]) leftPaddle.dy = leftPaddle.speed;
+  else leftPaddle.dy = 0;
 
-  movePaddles();
+  // Joueur droit
+  if (gameMode === 'BOT') {
+    // Bot imbattable 😈
+    if (ball.positionY + ball.height / 2 < rightPaddle.y + rightPaddle.height / 2)
+      rightPaddle.dy = -rightPaddle.speed;
+    else if (ball.positionY + ball.height / 2 > rightPaddle.y + rightPaddle.height / 2)
+      rightPaddle.dy = rightPaddle.speed;
+    else
+      rightPaddle.dy = 0;
+  } else {
+    if (keys["ArrowUp"]) rightPaddle.dy = -rightPaddle.speed;
+    else if (keys["ArrowDown"]) rightPaddle.dy = rightPaddle.speed;
+    else rightPaddle.dy = 0;
+  }
 
-  drawPaddle(leftPaddle);
-  drawPaddle(rightPaddle);
-  drawScore();
+  // Mise à jour des positions avec delta time
+  leftPaddle.y += leftPaddle.dy * dt;
+  rightPaddle.y += rightPaddle.dy * dt;
 
-  if(ball.exists) animateBall()
-
-  requestAnimationFrame(update);
+  // Limites
+  leftPaddle.y = Math.max(0, Math.min(canvas.height - leftPaddle.height, leftPaddle.y));
+  rightPaddle.y = Math.max(0, Math.min(canvas.height - rightPaddle.height, rightPaddle.y));
 }
 
-update();
-
-
-
-function incrementScore(incrementLeft){
-  if (incrementLeft)score.left++;
+// === SCORE + RESET ===
+function incrementScore(incrementLeft) {
+  if (incrementLeft) score.left++;
   else score.right++;
+}
 
-  ball.exists = false
-  setTimeout(function(){
-    ball.exists = true
+// Reset complet de la balle après un point
+function resetBall(scoredLeft) {
+  ball.exists = false;
+  gradientScore();
+
+  // Remet au centre
+  ball.positionX = canvas.width / 2;
+  ball.positionY = canvas.height / 2;
+
+  // Détermine la direction initiale
+  ball.vitesseX = scoredLeft ? 500 : -500;
+  ball.vitesseY = (Math.random() - 0.5) * 400; // petit angle aléatoire
+
+  // Après une courte pause, la balle revient
+  setTimeout(() => {
+    ball.exists = true;
   }, ball.resetTimeWhenScored);
 }
 
+// === BALLE ===
+function animateBall(dt) {
+  ball.positionY += ball.vitesseY * dt;
+  ball.positionX += ball.vitesseX * dt;
 
-
-function animateBall() {
-  ball.positionY += ball.vitesseY;
-  ball.positionX += ball.vitesseX;
-
-  // Si la balle sort à droite = point pour le joueur gauche
-  if (ball.positionX + ball.width / 2 >= canvas.width - 1) {
-    incrementScore(true)
-    ball.positionX = canvas.width / 2;
-    ball.positionY = canvas.height / 2;
-      gradientScore()
+  // Sortie à droite → point gauche
+  if (ball.positionX + ball.width >= canvas.width) {
+    incrementScore(true);
+    resetBall(true);
   }
 
-  // Si la balle sort à gauche = point pour le joueur droit
-  if (ball.positionX + ball.width / 2 < 0) {
-    incrementScore(false)
-    ball.positionX = canvas.width / 2;
-    ball.positionY = canvas.height / 2;
-      gradientScore()
+  // Sortie à gauche → point droit
+  if (ball.positionX <= 0) {
+    incrementScore(false);
+    resetBall(false);
   }
 
-  // Rebond en bas
-  if (ball.positionY + ball.height / 2 >= canvas.height - 1) {
-    ball.positionY = canvas.height - ball.height;
-    ball.vitesseY = -ball.vitesseY;
-  }
-
-  // Rebond en haut
-  if (ball.positionY + ball.height / 2 < 0) {
-    ball.positionY = ball.height;
+  // Rebonds haut/bas
+  if (ball.positionY <= 0 || ball.positionY + ball.height >= canvas.height) {
     ball.vitesseY = -ball.vitesseY;
   }
 
   // Collision raquette gauche
-  if (leftPaddle.x + leftPaddle.width / 2 > ball.positionX - ball.width / 2) {
-    if (
-      leftPaddle.y + leftPaddle.height <= ball.positionY - ball.height / 2 ||
-      leftPaddle.y > ball.positionY + ball.height / 2
-    ) {
-      // perdu
-    } else {
-      ball.vitesseX = -ball.vitesseX;
-    }
+  if (
+    ball.positionX <= leftPaddle.x + leftPaddle.width &&
+    ball.positionY + ball.height >= leftPaddle.y &&
+    ball.positionY <= leftPaddle.y + leftPaddle.height
+  ) {
+    let hitPos = (ball.positionY + ball.height / 2) - (leftPaddle.y + leftPaddle.height / 2);
+    ball.vitesseY = hitPos * 10;
+    ball.vitesseX = Math.abs(ball.vitesseX);
   }
 
   // Collision raquette droite
-  if (rightPaddle.x - rightPaddle.width / 2 < ball.positionX + ball.width / 2) {
-    if (
-      rightPaddle.y + rightPaddle.height <= ball.positionY - ball.height / 2 ||
-      rightPaddle.y > ball.positionY + ball.height / 2
-    ) {
-      // perdu
-    } else {
-      ball.vitesseX = -ball.vitesseX;
-    }
+  if (
+    ball.positionX + ball.width >= rightPaddle.x &&
+    ball.positionY + ball.height >= rightPaddle.y &&
+    ball.positionY <= rightPaddle.y + rightPaddle.height
+  ) {
+    let hitPos = (ball.positionY + ball.height / 2) - (rightPaddle.y + rightPaddle.height / 2);
+    ball.vitesseY = hitPos * 10;
+    ball.vitesseX = -Math.abs(ball.vitesseX);
   }
 
   drawBall();
 }
 
+// === BOUCLE DE JEU AVEC DELTA TIME ===
+let lastTime = performance.now();
+
+function update(now = performance.now()) {
+  const dt = (now - lastTime) / 1000; // secondes
+  lastTime = now;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawCenterLine();
+  drawScore();
+
+  movePaddles(dt);
+  drawPaddle(leftPaddle);
+  drawPaddle(rightPaddle);
+
+  if (ball.exists) animateBall(dt);
+
+  requestAnimationFrame(update);
+}
+
+update();
