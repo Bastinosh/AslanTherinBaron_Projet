@@ -69,39 +69,47 @@ function drawScore() {
 
 //fonction qui gere les deplacement 
 function movePaddles() {
-  //si la touche z est appuiyer la raquette la vitesse de la raquette est defini a -vitesse (mouvement vert le bas) 
+  // Joueur gauche : touches Z et S
   if (keys["z"]) {
     leftPaddle.dy = -leftPaddle.speed;
-  } else if (keys["s"]) {  //meme principe mais mouvement vers le haut
+  } else if (keys["s"]) {
     leftPaddle.dy = leftPaddle.speed;
   } else {
     leftPaddle.dy = 0;
   }
 
-  // Joueur droit : flèches ↑ et ↓
-  if (keys["ArrowUp"]) {
-    rightPaddle.dy = -rightPaddle.speed;
-  } else if (keys["ArrowDown"]) {
-    rightPaddle.dy = rightPaddle.speed;
+  // Joueur droit
+  if (gameMode === 'BOT') {
+    // Bot qui suit la balle
+    if (ball.positionY + ball.height/2 < rightPaddle.y + rightPaddle.height/2) {
+      rightPaddle.dy = -rightPaddle.speed;
+    } else if (ball.positionY + ball.height/2 > rightPaddle.y + rightPaddle.height/2) {
+      rightPaddle.dy = rightPaddle.speed;
+    } else {
+      rightPaddle.dy = 0;
+    }
   } else {
-    rightPaddle.dy = 0;
+    // Joueur humain : flèches ↑ et ↓
+    if (keys["ArrowUp"]) {
+      rightPaddle.dy = -rightPaddle.speed;
+    } else if (keys["ArrowDown"]) {
+      rightPaddle.dy = rightPaddle.speed;
+    } else {
+      rightPaddle.dy = 0;
+    }
   }
 
-  // met a jour les position des raquettes
+  // Mise à jour des positions
   leftPaddle.y += leftPaddle.dy;
   rightPaddle.y += rightPaddle.dy;
 
-  // fait en sorte que les raquette ne vont pas plus loin que la zone du canvas
+  // Limite des raquettes à l'intérieur du canvas
   if (leftPaddle.y < 0) leftPaddle.y = 0;
-  if (leftPaddle.y + leftPaddle.height > canvas.height) {
-    leftPaddle.y = canvas.height - leftPaddle.height;
-  }
-
+  if (leftPaddle.y + leftPaddle.height > canvas.height) leftPaddle.y = canvas.height - leftPaddle.height;
   if (rightPaddle.y < 0) rightPaddle.y = 0;
-  if (rightPaddle.y + rightPaddle.height > canvas.height) {
-    rightPaddle.y = canvas.height - rightPaddle.height;
-  }
+  if (rightPaddle.y + rightPaddle.height > canvas.height) rightPaddle.y = canvas.height - rightPaddle.height;
 }
+
 
 // avec ctx defini au dessus desine un rectangle pour les raquette
 function drawPaddle(paddle) {
@@ -142,6 +150,8 @@ function incrementScore(incrementLeft){
     ball.exists = true
   }, ball.resetTimeWhenScored);
 }
+
+
 
 function animateBall() {
   ball.positionY += ball.vitesseY;
